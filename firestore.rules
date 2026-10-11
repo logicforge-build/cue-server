@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Keyed by RevenueCat's anonymous App User ID (this app has no login, so there's no
+    // request.auth to scope writes against). Reads are blocked entirely — only the
+    // revenueCatWebhook Cloud Function reads this, via the Admin SDK, which bypasses these rules.
+    // Write shape is restricted so a malicious client can only ever affect the push target for its
+    // own app_user_id, never anyone else's — no sensitive data beyond a token is exposed either way.
+    match /pushTokens/{appUserId} {
+      allow read: if false;
+      allow write: if request.resource.data.keys().hasOnly(['fcmToken', 'updatedAt'])
+                   && request.resource.data.fcmToken is string
+                   && request.resource.data.updatedAt is int;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+functions/lib/
+firebase-debug.log*
+firestore-debug.log*
+.runtimeconfig.json
+.DS_Store
